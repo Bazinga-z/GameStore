@@ -8,8 +8,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import ir.ac.kntu.Game;
 import net.sourceforge.pmd.PMD;
 import net.sourceforge.pmd.PMDConfiguration;
 import org.junit.Assert;
@@ -19,7 +17,7 @@ import org.junit.Test;
  * 2 points
  * @author hossein
  */
-public class CheckPMDTest extends Game {
+public class CheckPMDTest {
 
     @Test
     public void testPMD() {

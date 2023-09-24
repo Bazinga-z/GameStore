@@ -1,6 +1,6 @@
 package ir.ac.kntu;
 
-public class Wallet extends AdminMenu {
+public class Wallet {
     private double balance;
 
     public Wallet(double balance) {

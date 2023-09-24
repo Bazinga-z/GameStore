@@ -1,30 +1,34 @@
 
 package ir.ac.kntu;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
-public class StoreProgram extends CheckPMDTest {
+public class StoreProgram {
 
     enum LogInOption {
-        ADMIN, USER;
+        ADMIN, USER
     }
 
     enum UserLogInOption {
-        SIGN_IN, SIGN_UP;
+        SIGN_IN, SIGN_UP, BACK
+    }
+
+    enum AdminLogInOption {
+        SIGN_IN, BACK
     }
 
     public static void main(String[] args) {
 
         LogInOption logInOption;
         UserLogInOption userLogInOption = UserLogInOption.SIGN_IN;
+        AdminLogInOption adminLogInOption = AdminLogInOption.SIGN_IN;
         Store store = new Store(new Admin(), "FariborzGameStore");
         Scanner scanner = new Scanner(System.in);
         printTheLogInOption();
         logInOption = getLogInOption(scanner);
 
         while (true) {
-            store = handleTheLogInOption(scanner, store, logInOption, userLogInOption);
+            store = handleTheLogInOption(scanner, store, logInOption, userLogInOption, adminLogInOption);
             System.out.println(store);
             printTheLogInOption();
             logInOption = getLogInOption(scanner);
@@ -43,27 +47,35 @@ public class StoreProgram extends CheckPMDTest {
     }
 
     public static Store handleTheLogInOption(Scanner scanner, Store store, LogInOption logInOption,
-            UserLogInOption userLogInOption) {
+            UserLogInOption userLogInOption, AdminLogInOption adminLogInOption) {
         switch (logInOption) {
             case ADMIN:
-                getAdminInfo(scanner,store);
+                handleTheAdminLogInProcess(scanner, adminLogInOption, store, logInOption, userLogInOption);
                 break;
             case USER:
-                printTheUserLogInOption();
-                userLogInOption = getUserLogInOption(scanner);
-                switch (userLogInOption) {
-                    case SIGN_IN:
-                        getUser(scanner, store);
-                        break;
-
-                    case SIGN_UP:
-                        addUser(scanner, store);
-                        break;
-                }
+                handleTheUserLogInProcess(scanner, adminLogInOption, store, logInOption, userLogInOption);
                 break;
-
+            default:
+                break;
         }
         return store;
+    }
+
+    private static AdminLogInOption getAdminLogInOption(Scanner scanner) {
+        AdminLogInOption[] adminLogInOptions = AdminLogInOption.values();
+        int adminLogInInput = scanner.nextInt();
+        scanner.nextLine();
+        adminLogInInput--;
+        if (adminLogInInput >= 0 && adminLogInInput < adminLogInOptions.length) {
+            return adminLogInOptions[adminLogInInput];
+        }
+        return null;
+    }
+
+    private static void printTheAdminLogInOption() {
+        System.out.println("Please select your choice: ");
+        System.out.println("1)sign in");
+        System.out.println("2)back");
     }
 
     public static UserLogInOption getUserLogInOption(Scanner scanner) {
@@ -78,8 +90,6 @@ public class StoreProgram extends CheckPMDTest {
     }
 
     public static void getAdminInfo(Scanner scanner, Store store) {
-
-        // printTheAdminLogInOption(scanner);
         System.out.println("Please enter your username");
         String adminUsername = scanner.nextLine();
         System.out.println("Your username is: " + adminUsername);
@@ -87,11 +97,11 @@ public class StoreProgram extends CheckPMDTest {
         String adminPassword = scanner.nextLine();
         System.out.println("your password is: " + adminPassword);
 
-        if(store.areYouTheAdmin(adminUsername,adminPassword)){
+        if (store.areYouTheAdmin(adminUsername, adminPassword)) {
             System.out.println("You have been successfully entered!");
-            System.out.println(store.getAdmin());
-        }
-         else {
+            AdminMenu adminMenu = new AdminMenu();
+            adminMenu.handleTheAdminMenuChoice(scanner,store);
+        } else {
             System.out.println("Wrong username or password!");
         }
     }
@@ -106,9 +116,10 @@ public class StoreProgram extends CheckPMDTest {
         System.out.println("Please select your choice: ");
         System.out.println("1)sign in");
         System.out.println("2)sign up");
+        System.out.println("3)back");
     }
 
-    public static void printTheAdminLogInOption(Scanner scanner) {
+    public static void printTheAdminLogInformation(Scanner scanner) {
         System.out.println("Please enter your username");
         scanner.nextLine();
         String adminUsername = scanner.nextLine();
@@ -116,15 +127,54 @@ public class StoreProgram extends CheckPMDTest {
         String adminPassword = scanner.nextLine();
     }
 
+    public static void handleTheAdminLogInProcess(Scanner scanner, AdminLogInOption adminLogInOption, Store store,
+            LogInOption logInOption, UserLogInOption userLogInOption) {
+        printTheAdminLogInOption();
+        adminLogInOption = getAdminLogInOption(scanner);
+        switch (adminLogInOption) {
+            case SIGN_IN:
+                getAdminInfo(scanner, store);
+                break;
+            case BACK:
+                printTheLogInOption();
+                logInOption = getLogInOption(scanner);
+                handleTheLogInOption(scanner, store, logInOption, userLogInOption, adminLogInOption);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void handleTheUserLogInProcess(Scanner scanner, AdminLogInOption adminLogInOption, Store store,
+            LogInOption logInOption, UserLogInOption userLogInOption) {
+        printTheUserLogInOption();
+        userLogInOption = getUserLogInOption(scanner);
+        switch (userLogInOption) {
+            case SIGN_IN:
+                getUser(scanner, store);
+                break;
+
+            case SIGN_UP:
+                addUser(scanner, store);
+                break;
+
+            case BACK:
+                printTheLogInOption();
+                logInOption = getLogInOption(scanner);
+                handleTheLogInOption(scanner, store, logInOption, userLogInOption, adminLogInOption);
+            default:
+                break;
+        }
+    }
+
     public static void addUser(Scanner scanner, Store store) {
         if (store == null) {
             System.out.println("Define store first!");
         } else {
-            // String username, password, email, phoneNumber;
             System.out.println("Please enter the username of user");
             String username = scanner.nextLine();
 
-            while(store.ifUsernameIsTaken(username)){
+            while (store.ifUsernameIsTaken(username)) {
                 System.out.println("this username is taken!");
                 System.out.println("please choose another username");
                 username = scanner.nextLine();
@@ -132,7 +182,7 @@ public class StoreProgram extends CheckPMDTest {
             System.out.println("username is: " + username);
             System.out.println("Please enter the password of user");
             String password = scanner.nextLine();
-            while(!passwordIsChosenCorrectly(password)){
+            while (!passwordIsChosenCorrectly(password)) {
                 System.out.println("Password must have 8 char at least and contains digit, lower and upper alphabet");
                 System.out.println("please change your password");
                 password = scanner.nextLine();
@@ -143,21 +193,9 @@ public class StoreProgram extends CheckPMDTest {
             String phoneNumber = scanner.nextLine();
             User user = new User(username, password, email, phoneNumber);
             store.addUser(user);
-            System.out.println(store.getUser(username,password));
             UserMenu userMenu = new UserMenu(user);
-            userMenu.getMenuOfUser(store.getUser(username,password),scanner);
-
-            /* if (store.addUser(user)) {
-                if(password.matches("(\\d[A-Z][a-z]){8,}"))
-                System.out.println("User successfully added!");
-                else{
-
-                }
-            } else {
-                System.out.println("this username is taken!");
-            */}
-
-
+            userMenu.getMenuOfUser(scanner, store, store.getGames());
+        }
     }
 
     public static void getUser(Scanner scanner, Store store) {
@@ -166,24 +204,25 @@ public class StoreProgram extends CheckPMDTest {
         } else {
             System.out.println("Please enter username");
             String username = scanner.nextLine();
-            System.out.println(username);
             System.out.println("Please enter password");
             String password = scanner.nextLine();
-            System.out.println(password);
-            //System.out.println(store.getUserMenu(username,password));
-            System.out.println(store.getUser(username,password));
-            if(store.getUser(username,password) != null){
-                UserMenu userMenu = new UserMenu(store.getUser(username,password));
-                userMenu.getMenuOfUser(store.getUser(username,password), scanner);
-            }
 
+            if (store.getUser(username, password) != null) {
+                UserMenu userMenu = new UserMenu(store.getUser(username, password));
+                userMenu.getMenuOfUser(scanner, store, store.getGames());
+            } else {
+                System.out.println("A user with this username and password not found.");
+                handleTheUserLogInProcess(scanner, AdminLogInOption.SIGN_IN, store, LogInOption.USER,
+                        UserLogInOption.SIGN_IN);
+            }
         }
     }
 
-    public static boolean passwordIsChosenCorrectly(String password){
-        if(password.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$")){
+    public static boolean passwordIsChosenCorrectly(String password) {
+        if (password.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$")) {
             return true;
+        } else {
+            return false;
         }
-        else return false;
     }
 }

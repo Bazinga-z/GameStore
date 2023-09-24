@@ -6,15 +6,23 @@ import java.util.Scanner;
 
 public class User {
     private Wallet wallet;
+
     private ArrayList<Game> library;
+
     private ArrayList<User> friends;
+
     private String username;
+
     private String password;
+
     private String email;
+
     private String phoneNumber;
 
+    private ArrayList<User> requests;
 
-    public User(Wallet wallet, ArrayList<Game> library, ArrayList<User> friends, String username, String password, String email, String phoneNumber) {
+    public User(Wallet wallet, ArrayList<Game> library, ArrayList<User> friends, String username, String password,
+            String email, String phoneNumber) {
         this.wallet = wallet;
         this.library = library;
         this.friends = friends;
@@ -24,10 +32,12 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public User(String username, String password) {
+    public User(String username, String email, String phoneNumber) {
         this.username = username;
-        this.password = password;
-
+        this.library = new ArrayList<>();
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.requests = new ArrayList<>();
     }
 
     public User(String username, String password, String email, String phoneNumber) {
@@ -36,9 +46,12 @@ public class User {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.wallet = new Wallet(0);
+        this.library = new ArrayList<>();
+        this.friends = new ArrayList<>();
+        this.requests = new ArrayList<>();
     }
 
-    public User(String username, String password, UserMenu userMenu){
+    public User(String username, String password, UserMenu userMenu) {
         this.username = username;
         this.password = password;
         this.username = username;
@@ -48,14 +61,16 @@ public class User {
         return wallet;
     }
 
-
-
     public ArrayList<Game> getLibrary() {
         return library;
     }
 
-    public void setLibrary(ArrayList<Game> library) {
-        this.library = library;
+    public void setLibrary() {
+        this.library = new ArrayList<>();
+    }
+
+    public void addGameToTheLibrary(Game game) {
+        this.library.add(game);
     }
 
     public ArrayList<User> getFriends() {
@@ -73,7 +88,7 @@ public class User {
     public void setUsername(Scanner scanner) {
         System.out.println("Please enter your new username: ");
         String username = scanner.next();
-        while (Store.ifUsernameIsTaken(username)){
+        while (Store.ifUsernameIsTaken(username)) {
             System.out.println("this username is taken!");
             System.out.println("please choose another username");
             username = scanner.nextLine();
@@ -88,7 +103,7 @@ public class User {
     public void setPassword(Scanner scanner) {
         System.out.println("please enter your new password: ");
         String password = scanner.next();
-        while(!StoreProgram.passwordIsChosenCorrectly(password)){
+        while (!StoreProgram.passwordIsChosenCorrectly(password)) {
             System.out.println("Password must have 8 char at least and contains digit, lower and upper alphabet");
             System.out.println("please change your password");
             password = scanner.nextLine();
@@ -122,34 +137,41 @@ public class User {
         this.wallet.deposit(deposit);
     }
 
+    public void addFriend(User userWeWantToFollow) {
+        friends.add(userWeWantToFollow);
+    }
 
+    public static ArrayList<User> testFriends() {
+        ArrayList<User> testFriends = new ArrayList<>();
+        testFriends.add(new User("Mahdi", "gmail.com", "0912"));
+        testFriends.add(new User("Fatemeh", "fatemeh.com", "02222"));
+        testFriends.add(new User("sara", "sara.com", "09090909"));
+        testFriends.add(new User("Malihe", "lplp.com", "01212121"));
+        return testFriends;
+    }
 
-    /*public UserMenu.Options getUserMenu() {
-        userMenu.printTheUserMenu();
-        this.userMenu.handleTheUserMenuChoice(this.userMenu);
-        return this.userMenu;
-    }*/
+    public ArrayList<User> getRequests() {
+        return requests;
+    }
 
-    public void getUser(){
-        //this.getUsername();
-        //this.getPassword();
-        //this.getEmail();
-        //this.getPhoneNumber();
-        //this.getWallet();
-
-        //getUsername();
-        //getPassword();
-        //getEmail();
-        //getPhoneNumber();
-        //getWallet();
+    public void addRequests(User theFollower) {
+        requests.add(theFollower);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof User)) {
+            return false;
+        }
         User user = (User) o;
-        //return wallet == user.wallet && Objects.equals(library, user.library) && Objects.equals(friends, user.friends) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(phoneNumber, user.phoneNumber);
+        // return wallet == user.wallet && Objects.equals(library, user.library) &&
+        // Objects.equals(friends, user.friends) && Objects.equals(username,
+        // user.username) && Objects.equals(password, user.password) &&
+        // Objects.equals(email, user.email) && Objects.equals(phoneNumber,
+        // user.phoneNumber);
         return username.equals(user.username);
     }
 
@@ -157,8 +179,6 @@ public class User {
     public int hashCode() {
         return Objects.hash(username);
     }
-
-
 
     @Override
     public String toString() {

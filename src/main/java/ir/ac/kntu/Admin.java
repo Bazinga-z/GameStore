@@ -2,15 +2,17 @@ package ir.ac.kntu;
 
 import java.util.Objects;
 
-public class  Admin {
+public class Admin {
     private static String username;
+
     private static String password;
 
     public Admin() {
         username = "Maryam";
         password = "1234";
     }
-    public Admin(String username, String password){
+
+    public Admin(String username, String password) {
         this.username = username;
         this.password = password;
     }
@@ -23,7 +25,6 @@ public class  Admin {
         return password;
     }
 
-
     @Override
     public int hashCode() {
 
@@ -32,8 +33,12 @@ public class  Admin {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof User)) {
+            return false;
+        }
         Admin admin = (Admin) o;
         return username.equals(admin.username) && password.equals(admin.password);
     }
@@ -43,5 +48,3 @@ public class  Admin {
         return "Admin{username: " + username + " password: " + password + "}";
     }
 }
-
-
